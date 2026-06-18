@@ -33,10 +33,16 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install flake8
+          pip install flake8 black isort
+
+      - name: Run black
+        run: black --check . || true
+
+      - name: Run isort
+        run: isort --check-only . || true
 
       - name: Run flake8
-        run: flake8 . --count --statistics --max-line-length=100 --per-file-ignores="*/__init__.py:F401,api.py:F401,F824,engine_finetune.py:F401,F811,main_finetune.py:F401,F811,models_vit.py:F401,prepare_data.py:E722,tests/*:F401,W293,E501,W292,util/*:F401,E501,W293,W292,E302" || true
+        run: flake8 . --count --statistics || true
 
   test:
     runs-on: ubuntu-latest
@@ -64,7 +70,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest pytest-cov
 
       - name: Run tests with coverage
         run: |
@@ -153,4 +158,3 @@ jobs:
           cache-to: |
             type=gha,mode=max
             type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE }}:buildcache,mode=max
-            
