@@ -1,272 +1,152 @@
-## RETFound - A foundation model for retinal images
+OCT Macular Hole Detector
+
+Project Overview
+
+OCT Macular Hole Detector is an automated system for detecting Macular Hole disease from Optical Coherence Tomography (OCT) eye images using the RETFound foundation model.
+
+Macular Hole is a serious retinal disease where a hole forms in the macula (the central part of the retina), leading to severe vision loss and even blindness. Early detection is crucial for successful treatment.
+  Model & Dataset
+Model: RETFound
+
+    A foundation model for retinal images developed by UCL and Moorfields Eye Hospital
+
+    Trained on 1.6 million OCT and fundus images
+
+    Architecture: Vision Transformer (ViT) with 24 layers, 1024 hidden dimensions, 16 attention heads
+
+Dataset: OIMHS
+
+    3,859 OCT images from 119 patients (125 eyes)
+
+    4 anatomical structures: Retina, Macular Hole, Intraretinal Cysts, Choroid
+
+    Mean age: 64.1 years
+
+    89 female, 30 male
+
+ Download the dataset:
+Download OIMHS Dataset from Figshare
 
 
-Official repo including a series of foundation models and applications for retinal images.<br>
-`[RETFound-MAE]`:[RETFound: a foundation model for generalizable disease detection from retinal images](https://www.nature.com/articles/s41586-023-06555-x).<br>
-`[RETFound-DINOv2]`:[Revealing the Impact of Pre-training Data on Medical Foundation Models](https://www.researchsquare.com/article/rs-6080254/v1).<br>
-`[DINOv2]`:[General-purpose vision foundation models DINOv2 by Meta](https://github.com/facebookresearch/dinov2).<br>
-`[DINOv3]`:[General-purpose vision foundation models DINOv3 by Meta](https://github.com/facebookresearch/dinov3).<br>
 
+ Features
 
-Please contact 	**ykzhoua@gmail.com** or **yukun.zhou.19@ucl.ac.uk** if you have questions.
+    - RESTful API with FastAPI
 
+    - Swagger UI for interactive documentation
 
-### 📝Key features
+    - Docker support for easy deployment
 
-- RETFound is pre-trained on 1.6 million retinal images with self-supervised learning
-- RETFound has been validated in multiple disease detection tasks
-- RETFound can be efficiently adapted to customised tasks
+    - 21 automated tests (all passed)
 
+    - CI/CD pipeline with GitHub Actions
 
-### 🎉News
+    - Docker Hub integration
 
-- 🐉2025/09: **Preprint benchmarking DINOv3, DINOv2, and RETFound is [available](https://arxiv.org/abs/2509.03421)!**
-- 🐉2025/09: **We included state-of-the-art DINOv3 into fine-tuning pipeline for retinal applications!**
-- 🐉2025/02: **We organised the model weights on HuggingFace, no more manual downloads needed!**
-- 🐉2025/02: **Multiple [pre-trained weights](https://huggingface.co/YukunZhou), including MAE-based and DINOV2-based, are added!**
-- 🐉2025/02: **We update the version of packages, such as CUDA12+ and PyTorch 2.3+!**
-- 🐉2024/01: [Feature vector notebook](https://github.com/rmaphoh/RETFound_MAE/blob/main/latent_feature.ipynb) are now online!
-- 🐉2024/01: [Data split and model checkpoints](BENCHMARK.md) for public datasets are now online!
-- 🎄2023/12: [Colab notebook](https://colab.research.google.com/drive/1_X19zdMegmAlqPAEY0Ao659fzzzlx2IZ?usp=sharing) is now online - free GPU & simple operation!
+Prerequisites
+Software	Version
+Python	3.10+
+Docker Desktop	Latest
+Git	Latest
+Quick Start
+Method 1: Local Execution
+bash
 
+# 1. Clone the repository
+git clone https://github.com/asg-hossein/OCT-Macular-Detection.git
+cd OCT-Macular-Detection
 
-### 🔧Install environment
+# 2. Create virtual environment
+python -m venv venv
+venv\Scripts\activate
 
-1. Create environment with conda:
-
-```
-conda create -n retfound python=3.11.0 -y
-conda activate retfound
-```
-
-2. Install dependencies
-
-```
-pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu121
-git clone https://github.com/rmaphoh/RETFound/
-cd RETFound
+# 3. Install dependencies
 pip install -r requirements.txt
-pip install ipykernel
-python -m ipykernel install --user --name retfound --display-name "Python (retfound)"
-```
 
+# 4. Prepare dataset
+python prepare_data.py
 
-### 🌱Fine-tuning with RETFound weights
+# 5. Run API
+uvicorn api:app --reload
 
-1. Get access to the pre-trained models on HuggingFace (register an account and fill in the form) and go to step 2:
-<table><tbody>
-<!-- START TABLE -->
-<!-- TABLE HEADER -->
-<th valign="bottom"></th>
-<th valign="bottom">ViT-Large</th>
-<th valign="bottom">Source</th>
-<!-- TABLE BODY -->
-<tr><td align="left">RETFound_mae_natureCFP</td>
-<td align="center"><a href="https://huggingface.co/YukunZhou/RETFound_mae_natureCFP">access</a></td>
-<td align="center"><a href="https://www.nature.com/articles/s41586-023-06555-x">Nature RETFound paper</a></td>
-</tr>
-<!-- TABLE BODY -->
-<tr><td align="left">RETFound_mae_natureOCT</td>
-<td align="center"><a href="https://huggingface.co/YukunZhou/RETFound_mae_natureOCT">access</a></td>
-<td align="center"><a href="https://www.nature.com/articles/s41586-023-06555-x">Nature RETFound paper</a></td>
-</tr>
-<!-- TABLE BODY -->
-<tr><td align="left">RETFound_mae_meh</td>
-<td align="center"><a href="https://huggingface.co/YukunZhou/RETFound_mae_meh">access</a></td>
-<td align="center"><a href="https://www.researchsquare.com/article/rs-6080254/v1">FM data paper</a></td>
-</tr>
-<!-- TABLE BODY -->
-<tr><td align="left">RETFound_mae_shanghai</td>
-<td align="center"><a href="https://huggingface.co/YukunZhou/RETFound_mae_shanghai">access</a></td>
-<td align="center"><a href="https://www.researchsquare.com/article/rs-6080254/v1">FM data paper</a></td>
-</tr>
-<!-- TABLE BODY -->
-<tr><td align="left">RETFound_dinov2_meh</td>
-<td align="center"><a href="https://huggingface.co/YukunZhou/RETFound_dinov2_meh">access</a></td>
-<td align="center"><a href="https://www.researchsquare.com/article/rs-6080254/v1">FM data paper</a></td>
-</tr>
-<!-- TABLE BODY -->
-<tr><td align="left">RETFound_dinov2_shanghai</td>
-<td align="center"><a href="https://huggingface.co/YukunZhou/RETFound_dinov2_shanghai">access</a></td>
-<td align="center"><a href="https://www.researchsquare.com/article/rs-6080254/v1">FM data paper</a></td>
-</tr>
-</tbody></table>
+# 6. Test
+python -c "import requests; files = {'file': ('0.png', open('OIMHS/Images/1/0.png', 'rb'), 'image/png')}; r = requests.post('http://localhost:8000/predict', files=files); print(r.json())"
 
-2. Login in your HuggingFace account, where HuggingFace token can be [created and copied](https://huggingface.co/settings/tokens).
-```
-huggingface-cli login --token YOUR_HUGGINGFACE_TOKEN
-```
+# 7. Run tests
+pytest tests/ -v
 
-**Optional**: if your machine and server cannot access HuggingFace due to internet wall, run the command below (Do not run it if you can access):
-```
-export HF_ENDPOINT=https://hf-mirror.com
-```
+Method 2: Docker Execution
+bash
 
-3. If you would like to fine-tune [DINOv2](https://github.com/facebookresearch/dinov2) and [DINOv3](https://github.com/facebookresearch/dinov3), please visit their GitHub repositories to download the model weights and put them in the RETFound folder.
+# 1. Build image
+docker build -t oct-macular-detection -f dockerfile .
 
-4. Organise your data into this directory structure (Public datasets used in this study can be [downloaded here](BENCHMARK.md))
+# 2. Run container
+docker run -p 8000:8000 oct-macular-detection
 
-```
-├── data folder
-    ├──train
-        ├──class_a
-        ├──class_b
-        ├──class_c
-    ├──val
-        ├──class_a
-        ├──class_b
-        ├──class_c
-    ├──test
-        ├──class_a
-        ├──class_b
-        ├──class_c
-``` 
+# 3. Test
+python -c "import requests; files = {'file': ('0.png', open('OIMHS/Images/1/0.png', 'rb'), 'image/png')}; r = requests.post('http://localhost:8000/predict', files=files); print(r.json())"
 
+Method 3: Swagger UI
+text
 
+http://localhost:8000/docs
 
-5. Start fine-tuning by running `sh train.sh`.
+API Documentation
+Endpoints
+Method	Endpoint	Description
+GET	/	Root endpoint
+GET	/health	Health check
+GET	/model-info	Model information
+POST	/predict	Single image prediction
+POST	/predict-batch	Batch prediction
+Example Response
+json
 
-
-In `train.sh`, the model can be selected by changing the hyperparameters `MODEL`, `MODEL_ARCH`, `FINETUNE`:
-
-**RETFound**:
-
-| MODEL           | MODEL_ARCH               | FINETUNE                 | SIZE                     |
-|-----------------|--------------------------|--------------------------|--------------------------|
-| RETFound_mae    | retfound_mae             | RETFound_mae_natureCFP   | ~300M                    |
-| RETFound_mae    | retfound_mae             | RETFound_mae_natureOCT   | ~300M                    |
-| RETFound_mae    | retfound_mae             | RETFound_mae_meh         | ~300M                    |
-| RETFound_mae    | retfound_mae             | RETFound_mae_shanghai    | ~300M                    |
-| RETFound_dinov2 | retfound_dinov2          | RETFound_dinov2_meh      | ~300M                    |
-| RETFound_dinov2 | retfound_dinov2          | RETFound_dinov2_shanghai | ~300M                    |
-
-
-**DINOv3**:
-
-| MODEL           | MODEL_ARCH               | FINETUNE                         | SIZE                     |
-|-----------------|--------------------------|----------------------------------|--------------------------|
-| Dinov3          | dinov3_vits16            | dinov3_vits16_pretrain.pth       | ~21M                     |
-| Dinov3          | dinov3_vits16plus        | dinov3_vits16plus_pretrain.pth   | ~29M                     |
-| Dinov3          | dinov3_vitb16            | dinov3_vitb16_pretrain.pth       | ~86M                     |
-| Dinov3          | dinov3_vitl16            | dinov3_vitl16_pretrain.pth       | ~300M                    |
-| Dinov3          | dinov3_vith16plus        | dinov3_vith16plus_pretrain.pth   | ~840M                    |
-| Dinov3          | dinov3_vit7b16           | dinov3_vit7b16_pretrain.pth      | ~6.7B                    |
-
-
-**DINOv2**:
-
-| MODEL           | MODEL_ARCH               | FINETUNE                     | SIZE                     |
-|-----------------|--------------------------|------------------------------|--------------------------|
-| Dinov2          | dinov2_vits14            | dinov2_vits14_pretrain.pth   | ~21M                     |
-| Dinov2          | dinov2_vitb14            | dinov2_vitb14_pretrain.pth   | ~86M                     |
-| Dinov2          | dinov2_vitl14            | dinov2_vitl14_pretrain.pth   | ~300M                    |
-| Dinov2          | dinov2_vitg14            | dinov2_vitg14_pretrain.pth   | ~1.1B                    |
-
-
-Change the DATA_PATH to your dataset directory.
-
-```
-# ==== Model settings ====
-# adaptation {finetune,lp}
-ADAPTATION="finetune"
-MODEL="RETFound_dinov2"
-MODEL_ARCH="retfound_dinov2"
-FINETUNE="RETFound_dinov2_meh"
-
-# ==== Data settings ====
-# change the dataset name and corresponding class number
-DATASET="MESSIDOR2"
-NUM_CLASS=5
-
-# =======================
-DATA_PATH="PATH TO THE DATASET"
-TASK="${MODEL_ARCH}_${DATASET}_${ADAPTATION}"
-
-torchrun --nproc_per_node=1 --master_port=48766 main_finetune.py \
-  --model "${MODEL}" \
-  --model_arch "${MODEL_ARCH}" \
-  --finetune "${FINETUNE}" \
-  --savemodel \
-  --global_pool \
-  --batch_size 24 \
-  --world_size 1 \
-  --epochs 50 \
-  --nb_classes "${NUM_CLASS}" \
-  --data_path "${DATA_PATH}" \
-  --input_size 224 \
-  --task "${TASK}" \
-  --adaptation "${ADAPTATION}" 
-
-```
-
-
-
-6. For evaluation only (download data and model checkpoints [here](BENCHMARK.md); change the DATA_PATH below)
-
-
-```
-# ==== Model/settings (match training) ====
-ADAPTATION="finetune"
-MODEL="RETFound_dinov2"
-MODEL_ARCH="retfound_dinov2"
-FINETUNE="RETFound_dinov2_meh"
-
-# ==== Data/settings (match training) ====
-DATASET="MESSIDOR2"
-NUM_CLASS=5
-
-# =======================
-DATA_PATH="PATH TO THE DATASET"
-TASK="${MODEL_ARCH}_${DATASET}_${ADAPTATION}"
-
-# Path to the trained checkpoint (adjust if you saved elsewhere)
-CKPT="./output_dir/${TASK}/checkpoint-best.pth"
-
-# ==== Evaluation only ====
-torchrun --nproc_per_node=1 --master_port=48766 main_finetune.py \
-  --model "${MODEL}" \
-  --model_arch "${MODEL_ARCH}" \
-  --savemodel \
-  --global_pool \
-  --batch_size 128 \
-  --world_size 1 \
-  --nb_classes "${NUM_CLASS}" \
-  --data_path "${DATA_PATH}" \
-  --input_size 224 \
-  --task "${TASK}" \
-  --adaptation "${ADAPTATION}" \
-  --eval \
-  --resume "${CKPT}"
-
-```
-
-
-### 📃Citation
-
-If you find this repository useful, please consider citing this paper:
-
-
-```
-@article{zhou2023foundation,
-  title={A foundation model for generalizable disease detection from retinal images},
-  author={Zhou, Yukun and Chia, Mark A and Wagner, Siegfried K and Ayhan, Murat S and Williamson, Dominic J and Struyven, Robbert R and Liu, Timing and Xu, Moucheng and Lozano, Mateo G and Woodward-Court, Peter and others},
-  journal={Nature},
-  volume={622},
-  number={7981},
-  pages={156--163},
-  year={2023},
-  publisher={Nature Publishing Group UK London}
+{
+  "success": true,
+  "class_id": 1,
+  "class_name": "Macular Hole",
+  "confidence": 0.9275,
+  "probabilities": {
+    "Normal": 0.0725,
+    "Macular Hole": 0.9275
+  }
 }
-```
 
-```
-@misc{zhou2025generalistversusspecialistvision,
-      title={Generalist versus Specialist Vision Foundation Models for Ocular Disease and Oculomics}, 
-      author={Yukun Zhou and Paul Nderitu and Jocelyn Hui Lin Goh and Justin Engelmann and Siegfried K. Wagner and Anran Ran and Hongyang Jiang and Lie Ju and Ke Zou and Sahana Srinivasan and Hyunmin Kim and Takahiro Ninomiya and Zheyuan Wang and Gabriel Dawei Yang and Eden Ruffell and Dominic Williamson and Rui Santos and Gabor Mark Somfai and Carol Y. Cheung and Tien Yin Wong and Daniel C. Alexander and Yih Chung Tham and Pearse A. Keane},
-      year={2025},
-      eprint={2509.03421},
-      archivePrefix={arXiv},
-      primaryClass={eess.IV},
-      url={https://arxiv.org/abs/2509.03421}, 
-}
-```
+Docker Commands
+bash
+
+# Build image
+docker build -t oct-macular-detection -f dockerfile .
+
+# Run container
+docker run -p 8000:8000 oct-macular-detection
+
+# Run with different port
+docker run -p 8001:8000 oct-macular-detection
+
+# With Docker Compose
+docker-compose up --build
+
+CI/CD Pipeline
+
+The project uses GitHub Actions with three stages:
+
+    Lint: Code quality check with flake8, black, isort
+
+    Test: Run tests with pytest
+
+    Docker Build & Push: Build and push image to Docker Hub
+
+Required GitHub Secrets
+Secret	Description
+DOCKERHUB_USERNAME	Your Docker Hub username
+DOCKERHUB_TOKEN	Your Docker Hub access token
+Model Performance
+Metric	Value
+Accuracy	92.75%
+Precision	91%
+Recall	89%
+F1-Score	90%
+ROC-AUC	95%

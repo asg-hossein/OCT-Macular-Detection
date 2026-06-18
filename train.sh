@@ -1,16 +1,13 @@
-# ==== Model settings ====
-# adaptation {finetune,lp}
-ADAPTATION="finetune"
-MODEL="RETFound_dinov2"
-MODEL_ARCH="retfound_dinov2"
-FINETUNE="RETFound_dinov2_meh"
+#!/bin/bash
 
-# ==== Data settings ====
-# change the dataset name and corresponding class number
-DATASET="MESSIDOR2"
-NUM_CLASS=5
-data_path="./${DATASET}"
-task="${MODEL_ARCH}_${DATASET}_${ADAPTATION}"
+ADAPTATION="finetune"
+MODEL="RETFound_mae"
+MODEL_ARCH="retfound_mae"
+FINETUNE="weights/RETFound_oct_weights.pth"   # وزن تو
+
+DATA_PATH="oimhs_data"
+NUM_CLASS=4
+BATCH_SIZE=8          # اگر GPU memory ارور داد، به 4 تغییر بده
 
 torchrun --nproc_per_node=1 --master_port=48766 main_finetune.py \
   --model "${MODEL}" \
@@ -18,11 +15,11 @@ torchrun --nproc_per_node=1 --master_port=48766 main_finetune.py \
   --finetune "${FINETUNE}" \
   --savemodel \
   --global_pool \
-  --batch_size 24 \
+  --batch_size ${BATCH_SIZE} \
   --world_size 1 \
-  --epochs 50 \
+  --epochs 30 \
   --nb_classes "${NUM_CLASS}" \
-  --data_path "${data_path}" \
+  --data_path "${DATA_PATH}" \
   --input_size 224 \
-  --task "${task}" \
-  --adaptation "${ADAPTATION}" 
+  --task "OIMHS_finetune" \
+  --adaptation "${ADAPTATION}"

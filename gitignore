@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -9,16 +10,19 @@ __pycache__/
 dist/
 build/
 
+# Virtual environments
 venv/
 .venv/
 ENV/
 env/
 
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
+# Project specific - HUGE FILES (MUST BE IGNORED)
 OIMHS/
 oimhs_data/
 weights/
@@ -27,18 +31,15 @@ output_logs/
 evaluation_results/
 *.log
 *.pth
-*.tar
-*.tar.gz
 
+# Docker
 *.tar
 
+# Testing
 .pytest_cache/
 .coverage
 htmlcov/
 
+# OS
 .DS_Store
 Thumbs.db
-
-.env
-.env.*
-secrets.yaml

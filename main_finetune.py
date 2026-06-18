@@ -13,6 +13,7 @@ import faulthandler
 # =========================
 import numpy as np
 import torch
+import os
 import torch.backends.cudnn as cudnn
 from torch.utils.tensorboard import SummaryWriter
 from timm.models.layers import trunc_normal_
@@ -142,7 +143,7 @@ def main(args, criterion):
     # ---- Optionally load args from resume (when training)
     if args.resume and not args.eval:
         resume_path = args.resume
-        checkpoint = torch.load(args.resume, map_location="cpu")
+        checkpoint = torch.load(args.resume, map_location="cpu", weights_only=False)
         print(f"Load checkpoint (args) from: {args.resume}")
         args = checkpoint["args"]
         args.resume = resume_path
@@ -180,21 +181,19 @@ def main(args, criterion):
     if args.finetune and not args.eval:
         print(f"Preparing to load pre-trained weights: {args.finetune}")
 
-        if args.model in ["Dinov3", "Dinov2"]:
-            checkpoint_path = args.finetune  # local path
-        elif args.model in ["RETFound_dinov2", "RETFound_mae"]:
+        # Support local weight file first
+        if os.path.isfile(args.finetune):
+            checkpoint_path = args.finetune
+            print(f"Loading LOCAL checkpoint: {checkpoint_path}")
+        else:
             print(f"Downloading pre-trained weights from Hugging Face Hub: {args.finetune}")
             checkpoint_path = hf_hub_download(
-                repo_id=f"YukunZhou/{args.finetune}",
-                filename=f"{args.finetune}.pth",
-            )
-        else:
-            raise ValueError(
-                f"Unsupported model '{args.model}'. "
-                f"Expected one of: Dinov3, Dinov2, RETFound_dinov2, RETFound_mae"
+                repo_id=f"YukunZhou/{args.finetune.split('/')[-1]}",
+                filename=f"{args.finetune.split('/')[-1]}.pth",
             )
 
-        checkpoint = torch.load(checkpoint_path, map_location="cpu")
+        # Load with weights_only=False for older checkpoints
+        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
         print(f"Loaded pre-trained checkpoint from: {checkpoint_path}")
 
         if args.model in ["Dinov3", "Dinov2"]:
@@ -208,13 +207,6 @@ def main(args, criterion):
         checkpoint_model = {k.replace("backbone.", ""): v for k, v in checkpoint_model.items()}
         checkpoint_model = {k.replace("mlp.w12.", "mlp.fc1."): v for k, v in checkpoint_model.items()}
         checkpoint_model = {k.replace("mlp.w3.", "mlp.fc2."): v for k, v in checkpoint_model.items()}
-
-        # -- Remove classifier if shape mismatched
-        state_dict = model.state_dict()
-        for k in ["head.weight", "head.bias"]:
-            if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
-                print(f"Removing key {k} from pretrained checkpoint")
-                del checkpoint_model[k]
 
         # -- Interpolate pos embed (ViT)
         interpolate_pos_embed(model, checkpoint_model)
@@ -298,7 +290,7 @@ def main(args, criterion):
 
     # ---- Eval-only: resume weights
     if args.resume and args.eval:
-        checkpoint = torch.load(args.resume, map_location="cpu")
+        checkpoint = torch.load(args.resume, map_location="cpu", weights_only=False)
         print(f"Load checkpoint for eval from: {args.resume}")
         model.load_state_dict(checkpoint["model"])
 
@@ -405,6 +397,15 @@ def main(args, criterion):
                     optimizer=optimizer, loss_scaler=loss_scaler, epoch=epoch, mode="best"
                 )
         print(f"Best epoch = {best_epoch}, Best score = {max_score:.4f}")
+        # Save metrics to CSV
+        csv_path = os.path.join(args.output_dir, args.task, "training_metrics.csv")
+        import csv
+        file_exists = os.path.exists(csv_path)
+        with open(csv_path, 'a', newline='') as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                writer.writerow(['epoch', 'train_loss', 'val_loss', 'val_score'])
+            writer.writerow([epoch, train_stats.get('loss', 0), val_stats.get('loss', 0), val_score])
 
         if log_writer is not None:
             log_writer.add_scalar("loss/val", val_stats["loss"], epoch)
@@ -422,7 +423,7 @@ def main(args, criterion):
     # Final Test (Best Ckpt)
     # =========================
     ckpt_path = os.path.join(args.output_dir, args.task, "checkpoint-best.pth")
-    checkpoint = torch.load(ckpt_path, map_location="cpu")
+    torch.load(ckpt_path, map_location="cpu", weights_only=False)
     model_without_ddp.load_state_dict(checkpoint["model"], strict=False)
     model.to(device)
     print(f"Test with the best model, epoch = {checkpoint.get('epoch', -1)}:")

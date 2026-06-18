@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  oct-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      cache_from:
+        - oct-macular-detection:latest
+    image: oct-macular-detection:latest
+    container_name: oct-macular-detection
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./weights:/app/weights:ro
+      - ./output_dir:/app/output_dir
+      - ./output_logs:/app/output_logs
+      - ./evaluation_results:/app/evaluation_results
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - oct-network
+
+networks:
+  oct-network:
+    driver: bridge
+    
