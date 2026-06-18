@@ -35,14 +35,14 @@ jobs:
           pip install -r requirements.txt
           pip install flake8 black isort
 
-      - name: Run flake8
-        run: flake8 . --count --statistics || true
-
       - name: Run black
         run: black --check .
 
       - name: Run isort
         run: isort --check-only .
+
+      - name: Run flake8
+        run: flake8 . --count --statistics --max-line-length=100 --extend-ignore=F401,F841,F811,F824,W291,W292,W293,W391,E302,E303,E501,E231,E261,E127,E221,E702,E402,E722
 
   test:
     runs-on: ubuntu-latest
