@@ -126,3 +126,4 @@ jobs:
           cache-to: |
             type=gha,mode=max
             type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE }}:buildcache,mode=max
+            
