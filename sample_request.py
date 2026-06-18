@@ -2,9 +2,10 @@
 Sample script to test the API
 """
 
-import requests
 import sys
 from pathlib import Path
+
+import requests
 
 API_URL = "http://localhost:8000"
 

@@ -1,10 +1,11 @@
 """Pytest configuration and fixtures"""
 
-import pytest
 from pathlib import Path
+
+import numpy as np
+import pytest
 import torch
 from PIL import Image
-import numpy as np
 
 
 @pytest.fixture

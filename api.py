@@ -20,7 +20,9 @@ import models_vit as models
 # ----------------------------------------------------------------------
 # Configuration
 # ----------------------------------------------------------------------
-MODEL_PATH = Path(__file__).parent / "output_dir" / "OIMHS_finetune" / "checkpoint-best.pth"
+MODEL_PATH = (
+    Path(__file__).parent / "output_dir" / "OIMHS_finetune" / "checkpoint-best.pth"
+)
 WEIGHTS_PATH = Path(__file__).parent / "weights" / "RETFound_oct_weights.pth"
 INPUT_SIZE = 224
 NUM_CLASSES = 2
@@ -30,11 +32,13 @@ CLASS_NAMES = ["Normal", "Macular Hole"]
 MEAN = [0.485, 0.456, 0.406]
 STD = [0.229, 0.224, 0.225]
 
-transform = transforms.Compose([
-    transforms.Resize((INPUT_SIZE, INPUT_SIZE)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=MEAN, std=STD),
-])
+transform = transforms.Compose(
+    [
+        transforms.Resize((INPUT_SIZE, INPUT_SIZE)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=MEAN, std=STD),
+    ]
+)
 
 # ----------------------------------------------------------------------
 # Device
@@ -70,9 +74,15 @@ def load_model():
             checkpoint_model = checkpoint
 
         # Clean up keys
-        checkpoint_model = {k.replace("backbone.", ""): v for k, v in checkpoint_model.items()}
-        checkpoint_model = {k.replace("mlp.w12.", "mlp.fc1."): v for k, v in checkpoint_model.items()}
-        checkpoint_model = {k.replace("mlp.w3.", "mlp.fc2."): v for k, v in checkpoint_model.items()}
+        checkpoint_model = {
+            k.replace("backbone.", ""): v for k, v in checkpoint_model.items()
+        }
+        checkpoint_model = {
+            k.replace("mlp.w12.", "mlp.fc1."): v for k, v in checkpoint_model.items()
+        }
+        checkpoint_model = {
+            k.replace("mlp.w3.", "mlp.fc2."): v for k, v in checkpoint_model.items()
+        }
 
         model.load_state_dict(checkpoint_model, strict=False)
         print("Loaded RETFound pretrained weights")
@@ -176,17 +186,11 @@ async def predict_batch(files: List[UploadFile] = File(...)):
             contents = await file.read()
             image = Image.open(io.BytesIO(contents)).convert("RGB")
             result = predict_image(image)
-            results.append({
-                "filename": file.filename,
-                "success": True,
-                **result
-            })
+            results.append({"filename": file.filename, "success": True, **result})
         except Exception as e:
-            results.append({
-                "filename": file.filename,
-                "success": False,
-                "error": str(e)
-            })
+            results.append(
+                {"filename": file.filename, "success": False, "error": str(e)}
+            )
 
     return {"results": results}
 
@@ -205,4 +209,5 @@ async def model_info():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
