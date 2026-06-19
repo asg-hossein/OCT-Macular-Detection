@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install tools
+      - name: Install lint tools
         run: |
           python -m pip install --upgrade pip
           pip install flake8 black isort
@@ -52,6 +52,12 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov httpx
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
-          pytest tests/ -v --cov=. --cov-report=term-missing
+          pytest tests/ -v --cov=. --cov-report=term-missing --cov-report=xml
+
+      - name: Upload test coverage (optional)
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
