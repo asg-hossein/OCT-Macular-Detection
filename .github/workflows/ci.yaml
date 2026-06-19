@@ -59,7 +59,7 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
@@ -82,7 +82,7 @@ jobs:
             type=sha,format=short
             latest
 
-      - name: Build and push to Docker Hub
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
