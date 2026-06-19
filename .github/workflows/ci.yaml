@@ -2,12 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
-
-env:
-  DOCKER_IMAGE: oct-macular-detection
 
 jobs:
   lint:
@@ -63,4 +60,3 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/oct-macular-detection:latest
-          
